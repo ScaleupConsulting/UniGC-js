@@ -1,0 +1,111 @@
+{
+  "name": "unigc-js",
+  "productName": "unigc-js",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": ".webpack/main",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "cmake-js": {
+    "runtime": "electron",
+    "runtimeVersion": "18.0.4",
+    "args": "x64"
+  },
+  "keywords": [],
+  "author": {
+    "name": "Ahmet Can ACAR",
+    "email": "ahmetcanacar93@gmail.com"
+  },
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "unigc_js"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": [
+            "darwin"
+          ]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        [
+          "@electron-forge/plugin-webpack",
+          {
+            "mainConfig": "./webpack.main.config.js",
+            "devServer": {
+              "hot": true,
+              "bonjour": true,
+              "liveReload": true,
+              "proxy": {
+                "/api": "http://localhost:3001"
+              }
+            },
+            "devContentSecurityPolicy": "connect-src 'self' ws://127.0.0.1:3002 'unsafe-eval'",
+            "renderer": {
+              "config": "./webpack.renderer.config.js",
+              "entryPoints": [
+                {
+                  "html": "./src/frontend/index.html",
+                  "js": "./src/frontend/renderer.js",
+                  "name": "main_window"
+                }
+              ]
+            }
+          }
+        ]
+      ]
+    }
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.63",
+    "@vercel/webpack-asset-relocator-loader": "^1.7.0",
+    "autoprefixer": "^10.4.7",
+    "babel-loader": "^8.2.5",
+    "css-loader": "^6.7.1",
+    "electron": "18.2.3",
+    "mini-css-extract-plugin": "^2.6.0",
+    "node-loader": "^2.0.0",
+    "postcss": "^8.4.13",
+    "postcss-import": "^14.1.0",
+    "postcss-loader": "^6.2.1",
+    "style-loader": "^3.3.1",
+    "tailwindcss": "^3.0.24",
+    "url-loader": "^4.1.1",
+    "webpack": "^5.72.1"
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "morgan": "^1.10.0",
+    "node-addon-api": "4.3.0",
+    "react": "^18.1.0",
+    "react-dom": "^18.1.0",
+    "webpack-cli": "^4.9.2"
+  }
+}
