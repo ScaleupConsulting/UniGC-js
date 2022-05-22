@@ -1,5 +1,4 @@
 import React from "react";
-import { sendAction } from "../actionHandlers";
 import { ws } from "../socketHandler";
 
 export function getGameActionButtons(actions, maxButtons, onClick, isMobile = false) {
@@ -10,8 +9,6 @@ export function getGameActionButtons(actions, maxButtons, onClick, isMobile = fa
         <ActionButton
           disabled={false}
           isMobile={isMobile}
-          // teamId={-1}
-          // agentId={-1}
           visible={true}
           actionName={"More Buttons"}
           color={"bg-gray-500"}

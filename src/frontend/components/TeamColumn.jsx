@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { sendAction } from "../actionHandlers";
 import { useActionQueue } from "../hooks/customHooks";
 import { actionInUse, allAgents, isActionClickable, isAgentClickable } from "../hooks/useSharedState";
-import { Agent } from "../lib/types";
 import { ActionButton } from "./ActionButton";
 import { ActiveAgentRow } from "./ActiveAgentRow";
 import { RobotRow } from "./RobotRow";
@@ -139,7 +138,10 @@ function TeamColumn(props) {
               </div>
             )}
             <div className={`flex flex-1 ${isRight ? "justify-begin" : "justify-end"} items-center h-full`}>
-              <button className="bg-white relative text-black h-12 w-12 rounded-full font-extrabold items-center justify-center flex">
+              <button
+                onClick={() => {}}
+                className="bg-white relative text-black h-12 w-12 rounded-full font-extrabold items-center justify-center flex"
+              >
                 <div className="absolute w-1.5 h-1/2 rounded-xl bg-[#323232]"></div>
                 <div className="absolute h-1.5 w-1/2 rounded-xl bg-[#323232]"></div>
               </button>
@@ -153,9 +155,33 @@ function TeamColumn(props) {
         </div>
         <ActiveAgentRow teamId={props.teamId} isRight={isRight} teamColor={props.teamColor} isKicking={props.isKicking}></ActiveAgentRow>
         <div className="grid grid-cols-3 gap-2 row-span-1 tracking-wider font-extrabold">
-          <button className={`col-span-1 w-full h-12 rounded-md p-1 ${isRight ? " bg-action-blue" : " bg-action-red"}`}>Timeout</button>
-          <button className={`col-span-1 w-full h-12 rounded-md p-1 ${isRight ? "bg-action-blue" : "bg-action-red"}`}>Retake</button>
-          <button className={`col-span-1 w-full h-12 rounded-md p-1 ${isRight ? "bg-action-blue" : "bg-action-red"}`}>Abort</button>
+          <button
+            onClick={() => {
+              console.log(`${props.teamId} Timeout`);
+            }}
+            className={`col-span-1 relative w-full h-12 rounded-md p-1 ${isRight ? " bg-action-blue" : " bg-action-red"}`}
+          >
+            <div className="absolute w-6 h-6 top-0 left-0 translate-x-[-50%] translate-y-[-50%] text-black ring-4 ring-green-300 bg-white rounded-full">
+              1
+            </div>
+            Timeout
+          </button>
+          <button
+            onClick={() => {
+              console.log(`${props.teamId} Retake`);
+            }}
+            className={`col-span-1 w-full h-12 rounded-md p-1 ${isRight ? "bg-action-blue" : "bg-action-red"}`}
+          >
+            Retake
+          </button>
+          <button
+            onClick={() => {
+              console.log(`${props.teamId} Abort`);
+            }}
+            className={`col-span-1 w-full h-12 rounded-md p-1 ${isRight ? "bg-action-blue" : "bg-action-red"}`}
+          >
+            Abort
+          </button>
         </div>
 
         <div className={`grid h-full  grid-flow-row w-3/4 row-span-3 ${isRight && "place-self-end"} items-center `}>

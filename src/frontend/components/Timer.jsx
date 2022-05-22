@@ -16,7 +16,6 @@ function getMinutesSeconds(miliseconds) {
 }
 
 export function Timer(props) {
-  let clockString = "";
   let { hours, mins, secs } = getMinutesSeconds(props.time);
 
   return (

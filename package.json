@@ -5,7 +5,7 @@
   "description": "My Electron application description",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
+    "dev": "cross-env DEV=TRUE electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
@@ -18,8 +18,8 @@
   },
   "keywords": [],
   "author": {
-    "name": "Ahmet Can ACAR",
-    "email": "ahmetcanacar93@gmail.com"
+    "name": "ScaleUp",
+    "email": "x@x.com"
   },
   "license": "MIT",
   "config": {
@@ -88,6 +88,7 @@
     "@vercel/webpack-asset-relocator-loader": "^1.7.0",
     "autoprefixer": "^10.4.7",
     "babel-loader": "^8.2.5",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "electron": "18.2.3",
     "mini-css-extract-plugin": "^2.6.0",
@@ -98,14 +99,14 @@
     "style-loader": "^3.3.1",
     "tailwindcss": "^3.0.24",
     "url-loader": "^4.1.1",
-    "webpack": "^5.72.1"
+    "webpack": "^5.72.1",
+    "webpack-cli": "^4.9.2"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0",
     "morgan": "^1.10.0",
     "node-addon-api": "4.3.0",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0",
-    "webpack-cli": "^4.9.2"
+    "react-dom": "^18.1.0"
   }
 }

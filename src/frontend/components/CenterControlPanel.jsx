@@ -1,13 +1,13 @@
 import React from "react";
-import { useActionQueue } from "../hooks/customHooks";
-import { actionInUse } from "../hooks/useSharedState";
+import { actionInUse, allAgents } from "../hooks/useSharedState";
 import { ActionButton } from "./ActionButton";
 import { StateInfo } from "./Timer";
-import { getUndoQueue, UndoQueue } from "./UndoQueue";
+import { UndoQueue } from "./UndoQueue";
 
 function CenterControlPanel({ penaltyActions, stateTimer }) {
   // const [undoQueue, setUndoQueue] = useActionQueue();
   const [selectedAction, setSelectedAction] = actionInUse.useSharedState();
+  const [agents, setAgents] = allAgents.useSharedState();
 
   function getGameActionButtons(maxButtons, onClick, isMobile = false) {
     let _actions = [];
@@ -15,29 +15,35 @@ function CenterControlPanel({ penaltyActions, stateTimer }) {
       if (i == maxButtons) {
         _actions.push(
           <ActionButton
-            disabled={false}
+            disabled={selectedAction && selectedAction != a.id}
             isMobile={isMobile}
-            // teamId={-1}
-            // agentId={-1}
             visible={true}
             actionName={"More Buttons"}
             color={"bg-gray-500"}
-            // onClick={onclick} //show list
+            onClick={() => {}} //show list
             key={"center_morebuttons"}
           ></ActionButton>
         );
       } else {
         _actions.push(
           <ActionButton
-            disabled={false}
+            disabled={selectedAction && selectedAction != a.id}
             isMobile={isMobile}
-            // teamId={-1}
-            // agentId={-1}
             visible={!(i >= maxButtons)}
             actionName={a.actionName}
             color={"bg-action-blue"}
             onClick={() => {
-              setSelectedAction(a);
+              if (selectedAction == a.id) {
+                setAgents(
+                  agents.map((a) => {
+                    a.selectable = true;
+                    return a;
+                  })
+                );
+                setSelectedAction(null);
+              } else {
+                setSelectedAction(a.id);
+              }
             }}
             key={"center_" + a.actionName}
           ></ActionButton>

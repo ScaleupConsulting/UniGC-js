@@ -1,5 +1,4 @@
 import React from "react";
-import { allAgents } from "../hooks/useSharedState";
 const image = require("../assets/robot.png");
 const gloves = require("../assets/gloves.svg");
 const glovesSrc = gloves.default;

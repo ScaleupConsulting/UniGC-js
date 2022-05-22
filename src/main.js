@@ -9,7 +9,7 @@ import { startServer } from "./server";
 let logger = morgan("dev");
 
 // const webApp = express();
-// const apiPort = 3001; 
+// const apiPort = 3001;
 
 // const webServer = webApp.listen(apiPort);
 
@@ -29,8 +29,9 @@ if (require("electron-squirrel-startup")) {
 }
 
 const createWindow = () => {
-  startServer()
-
+  if (!process.env.DEV) {
+    startServer();
+  }
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
@@ -43,8 +44,11 @@ const createWindow = () => {
   });
 
   // and load the index.html of the app.
-  // mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  mainWindow.loadURL("http://127.0.0.1:3007/main_window");
+  if (process.env.DEV) {
+    mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  } else {
+    mainWindow.loadURL("http://127.0.0.1:3007/main_window");
+  }
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();

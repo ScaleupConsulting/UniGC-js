@@ -14,12 +14,39 @@ export function getUndoQueue(undoQueue, color) {
 export function UndoQueue(props) {
   return (
     <>
-      <div className="py-6 justify-center md:py-3 rounded-[2rem] md:rounded-xl flex z-30 bg-slate-900 bg-opacity-25 items-center ring-2 ring-white ring-opacity-25 ">
-        <button className=" mx-3 text-action-blue text-5xl  md:text-lg  font-extrabold ">{"<"}</button>
-        <div className=" overflow-x-scroll max-w-full rounded-lg items-center justify-center">
-          <div className="grid auto-cols-[32%] md:auto-cols-[50%] lg:auto-cols-[32%] xl:auto-cols-[24%] gap-4 md:gap-2 grid-flow-col ">{getUndoQueue(tempUndoQueue, "bg-action-blue")}</div>
+      <div className="justify-center py-1 rounded-[2rem] md:rounded-xl flex z-30 bg-slate-900 bg-opacity-25 items-center ring-2 ring-white ring-opacity-25 ">
+        {!props.isMobile && (
+          <button
+            onClick={() => {
+              document.querySelector("#undoQueue").scrollBy(-50, 0);
+            }}
+            className=" px-2 mx-1 py-1 rounded-lg  text-action-blue text-5xl  md:text-lg  font-extrabold "
+          >
+            {"<"}
+          </button>
+        )}
+
+        <div id="undoQueue" className=" py-1 overflow-x-scroll max-w-full rounded-lg items-center justify-center">
+          <div
+            className={`grid ${
+              props.isMobile
+                ? "px-4  py-1 gap-4 auto-cols-[32%] "
+                : "auto-cols-[32%] md:auto-cols-[50%] lg:auto-cols-[32%] xl:auto-cols-[24%] px-1 gap-4 md:gap-2"
+            }  grid-flow-col`}
+          >
+            {getUndoQueue(tempUndoQueue, "bg-action-blue")}
+          </div>
         </div>
-        <button className="mx-3 text-action-blue text-5xl md:text-lg font-extrabold ">{">"}</button>
+        {!props.isMobile && (
+          <button
+            onClick={() => {
+              document.querySelector("#undoQueue").scrollBy(50, 0);
+            }}
+            className="px-2 mx-1 py-1 rounded-lg text-action-blue text-5xl md:text-lg font-extrabold "
+          >
+            {">"}
+          </button>
+        )}
       </div>
     </>
   );

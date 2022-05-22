@@ -7,7 +7,7 @@ rules.push({
 });
 
 module.exports = {
-  mode: "production",
+  mode: process.env.DEV ? "development" : "production",
   module: {
     rules,
   },

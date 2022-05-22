@@ -1,4 +1,3 @@
-import { Action, Agent } from "./lib/types";
 import { ws } from "./socketHandler";
 
 export function sendAction(actionId, agent, cb) {
