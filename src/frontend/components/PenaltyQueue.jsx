@@ -1,30 +1,40 @@
 import React from "react";
-import { teamActiveAgent } from "../hooks/useSharedState";
+import { penaltyQueue } from "../hooks/useSharedState";
 
-export const ActiveAgent = (props) => {
-  let [activeAgent] = teamActiveAgent.useSharedState();
+const PenalyQueueItem = (props) => {
+  return (
+    <div
+      style={{ backgroundColor: props.teamColor }}
+      className={` text-white h-[50%] lg:h-[75%] text-5xl px-3  lg:px-6 py-4 rounded-xl justify-center flex `}
+    >
+      {props.agent}
+      <span className="text-3xl place-self-center tracking-wider mx-2"> ({Math.ceil(Math.random() * 50)}s)</span>
+      {props.children}
+    </div>
+  );
+};
+
+export const PenaltyQueue = (props) => {
+  const [penaltyQ] = penaltyQueue.useSharedState();
+
   let { teamColor } = props;
-  if (activeAgent.teamId == props.teamId) {
+  if (penaltyQ.length) {
     if (props.isMobile) {
       return (
-        <div
-          style={{ backgroundColor: teamColor }}
-          className={` text-white h-[50%] lg:h-[75%] text-5xl px-3  lg:px-6 py-4 rounded-xl justify-center flex `}
-        >
-          {activeAgent.name}
-          <span className="text-3xl place-self-center tracking-wider mx-2">(44s)</span>
-          {props.children}
-        </div>
-      );
+        <PenalyQueueItem
+          agent={penaltyQ.filter((a) => a.teamId == props.teamId)[0]?.name}
+          teamColor={props.teamColor}
+        />
+      ); ///need to fix
     } else
       return (
         <div
           style={{ backgroundColor: teamColor }}
           className={` text-white h-[50%] lg:h-[75%] text-xl px-3  lg:px-6 py-2 lg:py-2 rounded-xl  self-center items-center flex `}
         >
-          {activeAgent.name}
+          {penaltyQ.filter((a) => a.teamId == props.teamId)[0]?.name}
           <span className="text-xs tracking-wider">
-            <sup>(44s)</sup>
+            <sup>({Math.ceil(Math.random() * 50)}s)</sup>
           </span>
           {props.children}
         </div>
@@ -33,7 +43,7 @@ export const ActiveAgent = (props) => {
     return <div></div>;
   }
 };
-export const ActiveAgentRow = (props) => {
+export const KickingPenaltyRow = (props) => {
   if (props.isMobile) {
     return (
       <div className="flex items-center justify-end">
@@ -50,8 +60,12 @@ export const ActiveAgentRow = (props) => {
     );
   } else
     return (
-      <div className={`flex w-2/3 justify-between min-w-min h-full row-span-1 ${props.isRight ? "justify-self-end  place-content-end" : ""}`}>
-        {props.isRight ? <ActiveAgent teamId={props.teamId} teamColor={props.teamColor} /> : ""}
+      <div
+        className={`flex w-2/3 justify-between min-w-min h-full row-span-1 ${
+          props.isRight ? "justify-self-end  place-content-end" : ""
+        }`}
+      >
+        {props.isRight ? <PenaltyQueue teamId={props.teamId} teamColor={props.teamColor} /> : ""}
         <div className="text-white text-xl md:text-2xl lg:text-3xl flex items-center mx-2">
           {props.isRight && <span className="h-auto self-auto px-2">Kicking</span>}
           <div className="w-8 h-8 ring-2 ring-white rounded-full relative">
@@ -64,7 +78,7 @@ export const ActiveAgentRow = (props) => {
           </div>
           {!props.isRight && <span className="h-auto px-2">Kicking</span>}
         </div>
-        {!props.isRight ? <ActiveAgent teamId={props.teamId} teamColor={props.teamColor} /> : ""}
+        {!props.isRight ? <PenaltyQueue teamId={props.teamId} teamColor={props.teamColor} /> : ""}
       </div>
     );
 };

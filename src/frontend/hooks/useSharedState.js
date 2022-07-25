@@ -41,7 +41,5 @@ const tempAllAgents = [
 
 export const actionInUse = new SharedStateTarget(null);
 export const allAgents = new SharedStateTarget(tempAllAgents);
-// export const isAgentClickable = new SharedStateTarget([]);
-// export const isActionClickable = new SharedStateTarget([]); //should also check for legal actions
 export const teamActiveAgent = new SharedStateTarget(null);
-// export const currentGameState = new SharedStateTarget([]);
+export const penaltyQueue = new SharedStateTarget([]);

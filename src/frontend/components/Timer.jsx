@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { ws } from "../socketHandler";
 
 function getMinutesSeconds(miliseconds) {
   let mins = Math.floor(miliseconds / 60);
@@ -16,11 +17,30 @@ function getMinutesSeconds(miliseconds) {
 }
 
 export function Timer(props) {
-  let { hours, mins, secs } = getMinutesSeconds(props.time);
+  const [gameTime, setGameTime] = useState(0);
+
+  useEffect(() => {
+    ws.addEventListener("message", (e) => {
+      let data = JSON.parse(e.data);
+      if (data && data.type) {
+        switch (data.type) {
+          case "c_time":
+            setGameTime(Number(data.value));
+            break;
+        }
+      }
+    });
+  }, []);
+
+  let { hours, mins, secs } = getMinutesSeconds(gameTime);
 
   return (
     <div id="game_time" className="row-span-1 relative flex justify-center ">
-      <div className={`${props.isMobile ? "text-5xl" : "text-xl md:text-3xl lg:text-4xl xl:text-5xl"} rounded-full text-white`}>
+      <div
+        className={`${
+          props.isMobile ? "text-5xl" : "text-xl md:text-3xl lg:text-4xl xl:text-5xl"
+        } rounded-full text-white`}
+      >
         <div
           className={`drop-shadow-md bg-[#373e42] -z-10 border-slate-100 lg:blur-[1px] rounded-full border-4 ${
             props.isMobile ? "p-[40%] blur-sm " : "p-[40%]  2xl:p-[30%]"
@@ -40,7 +60,22 @@ export function Timer(props) {
 }
 
 export function StateInfo(props) {
-  let { mins, secs } = getMinutesSeconds(props.time);
+  const [gameTime, setGameTime] = useState(0);
+
+  useEffect(() => {
+    ws.addEventListener("message", (e) => {
+      let data = JSON.parse(e.data);
+      if (data && data.type) {
+        switch (data.type) {
+          case "c_time":
+            setGameTime(Number(data.value));
+            break;
+        }
+      }
+    });
+  }, []);
+
+  let { mins, secs } = getMinutesSeconds(gameTime);
   if (props.isMobile)
     return (
       <>
@@ -50,7 +85,9 @@ export function StateInfo(props) {
           {secs} <span className="text-4xl self-end">s</span>
         </div>
         <div id="state_desc" className="flex text-5xl mt-2">
-          <span className="text-action-blue w-full  content-center text-center font-medium">{props.state || "Ready"}</span>
+          <span className="text-action-blue w-full  content-center text-center font-medium">
+            {props.state || "Ready"}
+          </span>
         </div>
       </>
     );

@@ -1,26 +1,8 @@
 import { app, BrowserWindow } from "electron";
-import os from "os";
 import path from "path";
-import express from "express";
-import apiRouter from "./apiRouter";
-import morgan from "morgan";
+
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer';
 import { startServer } from "./server";
-
-let logger = morgan("dev");
-
-// const webApp = express();
-// const apiPort = 3001;
-
-// const webServer = webApp.listen(apiPort);
-
-// console.log(`API on port: ${apiPort}`);
-
-// webApp.use(logger);
-
-// webApp.use(express.json()); // for parsing application/json
-// webApp.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-
-// webApp.use("/api", apiRouter);
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require("electron-squirrel-startup")) {
@@ -65,6 +47,11 @@ app.on("ready", async () => {
   // await session.defaultSession.loadExtension(reactDevToolsPath);
   createWindow();
 });
+app.whenReady().then(() => {
+  installExtension(REACT_DEVELOPER_TOOLS)
+    .then((name) => console.log(`Added Extension:  ${name}`))
+    .catch((err) => console.log('An error occurred: ', err));
+})
 
 // Quit when all windows are closed, except on macOS. There, it's common
 // for applications and their menu bar to stay active until the user quits

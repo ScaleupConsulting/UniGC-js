@@ -7,7 +7,7 @@ import { TeamInfoCol } from "./components/TeamInfoCol_Mobile";
 import { StateInfo, Timer } from "./components/Timer";
 import { UndoQueue } from "./components/UndoQueue";
 import { useGameState } from "./hooks/customHooks";
-import { allAgents, teamActiveAgent } from "./hooks/useSharedState";
+import { allAgents, penaltyQueue, teamActiveAgent } from "./hooks/useSharedState";
 import { ws } from "./socketHandler";
 
 let initialState = {
@@ -15,34 +15,153 @@ let initialState = {
   actionList: [],
 };
 
-function ControllerMain() {
-  const [gameTime, setGameTime] = useState(0);
+function MainMobileLayout(props) {
+  const { teams, actions, gameState, undoQueue, activeTeam } = props;
+  return (
+    <div className="grid auto-rows-min gap-4 mobile p-12 text-white max-h-screen h-full grid-cols-1 border w-full justify-center ">
+      <section id="game_info_panel" className=" grid grid-cols-3  w-full mb-12">
+        <TeamInfoCol
+          teamId={0}
+          isMobile={true}
+          position="left"
+          teamName={teams[0]?.name}
+          teamColor={teams[0]?.color}
+        ></TeamInfoCol>
+        <div className=" w-full col-span-1 items-center justify-center grid grid-rows-2 grid-cols-1">
+          <Score teams={teams} isMobile={true}></Score>
+          <div className="row-span-1 mt-16 mb-12">
+            <Timer isMobile={true}></Timer>
+          </div>
+        </div>
+        <TeamInfoCol
+          teamId={1}
+          isMobile={true}
+          position="right"
+          teamName={teams[1].name}
+          teamColor={teams[1].color}
+        ></TeamInfoCol>
+      </section>
+      <section id="StateTimer" className="tracking-wide text-6xl my-6">
+        <StateInfo isMobile={true}></StateInfo>
+      </section>
+      <section id="GameActions" className="grid grid-cols-3 auto-rows-fr gap-x-6 gap-y-4 grid-rows-3 text-4xl">
+        {getGameActionButtons(actions.penaltyActions, 8, () => {})}
+      </section>
+      <section
+        id="team_panel"
+        style={{ backgroundColor: teams[activeTeam].color, color: "white" }}
+        className="h-full  rounded-[2rem] mt-6 drop-shadow-xl shadow-lg"
+      >
+        <div id="team_names" className="text-6xl flex justify-between px-4 py-8 text-white items-center">
+          <div
+            onClick={() => {
+              setActiveTeam(0);
+            }}
+            className="w-full text-center"
+          >
+            {teams[0].name}
+          </div>
+          <div
+            onClick={() => {
+              setActiveTeam(1);
+            }}
+            className=" w-full text-center"
+          >
+            {teams[1].name}
+          </div>
+        </div>
+        <div id="team_details" className="relative pt-4 text-[#323232] mx-1 ">
+          {activeTeam == 0 ? (
+            <TeamColumn
+              actions={actions.teamActions}
+              isMobile={true}
+              agentState={gameState.agents}
+              isKicking={gameState.kicking_teamId == 0}
+              team={teams[0]}
+              otherTeamColor={teams[1].color}
+              teamId={0}
+            ></TeamColumn>
+          ) : (
+            <TeamColumn
+              actions={actions.teamActions}
+              isMobile={true}
+              team={teams[1]}
+              agentState={gameState.agents}
+              isKicking={gameState.kicking_teamId == 1}
+              otherTeamColor={teams[0].color}
+              teamId={1}
+            ></TeamColumn>
+          )}
+        </div>
+      </section>
+      <section id="undo_queue" className="h-full mt-12 w-full bg">
+        <UndoQueue isMobile={true} undoQueue={undoQueue}></UndoQueue>
+      </section>
+    </div>
+  );
+}
 
+function MainLayout(props) {
+  const { teams, actions, gameState, undoQueue } = props;
+  return (
+    <div className="grid h-full grid-cols-5 p-4 unselectable justify-between" key={"none"}>
+      <section id="team_col_left" className="col-span-2">
+        <TeamColumn
+          position="left"
+          // numRobots={6}
+          isKicking={gameState?.kicking_teamId == 0 ? true : false}
+          actions={actions.teamActions}
+          teamId={0}
+          teamName={teams[0]?.name}
+          teamColor={teams[0]?.color}
+          agentState={gameState?.agents}
+        ></TeamColumn>
+      </section>
+      <section id="center-control-panel" className="col-span-1 h-full ">
+        <div className="h-full items-center  justify-center gap-6 grid grid-rows-6  grid-cols-1 max-w-full">
+          <Score teams={teams}></Score>
+          <Timer></Timer>
+          <CenterControlPanel penaltyActions={actions.penaltyActions}></CenterControlPanel>
+        </div>
+      </section>
+      <section id="team_col_right" className="col-span-2">
+        <TeamColumn
+          position="right"
+          // numRobots={6}
+          isKicking={gameState.kicking_teamId == 1 ? true : false}
+          actions={actions.teamActions}
+          teamId={1}
+          teamName={teams[1].name}
+          teamColor={teams[1].color}
+          agentState={gameState.agents}
+        ></TeamColumn>
+      </section>
+    </div>
+  );
+}
+function ControllerMain() {
   const [initialSetup, setInitialSetup] = useState(initialState);
   const [gameState, setGameState] = useGameState();
-  // const [selectedAction, setSelectedAction] = useState();
-  const [activeAgent, setActiveAgent] = teamActiveAgent.useSharedState();
   const [activeTeam, setActiveTeam] = useState(1);
   const [agents, setAgents] = allAgents.useSharedState();
+  const [penaltyQ, setPenaltyQ] = penaltyQueue.useSharedState();
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // ws.onmessage = (e: any) => {};
-    // ws.current = new WebSocket("ws://127.0.0.1:3002");
     ws.onmessage = (e) => {
-      let data = JSON.parse(e.data);
-      if (data && data.type) {
-        switch (data.type) {
-          case "c_time":
-            setGameTime(Number(data.value));
-            break;
+      let message = JSON.parse(e.data);
+      if (message && message.type) {
+        switch (message.type) {
+          // case "c_time":
+          //   setGameTime(Number(data.value));
+          //   break;
           case "setup":
-            console.log(data);
+            console.log(message);
 
-            setInitialSetup(data.data.game);
-            setActiveAgent(agents[2]);
+            setInitialSetup(message.data);
             break;
           case "stateUpdate":
-            setGameState(data.value);
+            setGameState(message.value);
 
             setAgents(
               agents.map((a) => {
@@ -50,10 +169,7 @@ function ControllerMain() {
                 return a;
               })
             );
-            // if (data.value.agents) {
-
-            //   //to set agent state changes
-            // }
+            setPenaltyQ(agents.filter((_) => _.penalized));
             break;
         }
       }
@@ -85,125 +201,25 @@ function ControllerMain() {
     ],
   };
 
-  const [isMobile, setIsMobile] = useState(false);
-
   if (initialSetup.teams.length) {
     if (isMobile) {
       return (
-        <div className="grid auto-rows-min gap-4 mobile p-12 text-white max-h-screen grid-cols-1 border w-full justify-center ">
-          <section id="game_info_panel" className=" grid grid-cols-3  w-full mb-12">
-            <TeamInfoCol
-              teamId={0}
-              isMobile={true}
-              position="left"
-              teamName={initialSetup.teams[0].name}
-              teamColor={initialSetup.teams[0].color}
-            ></TeamInfoCol>
-            <div className=" w-full col-span-1 items-center justify-center grid grid-rows-2 grid-cols-1">
-              <Score isMobile={true}></Score>
-              <div className="row-span-1 mt-16 mb-12">
-                <Timer isMobile={true} time={gameTime}></Timer>
-              </div>
-            </div>
-            <TeamInfoCol
-              teamId={1}
-              isMobile={true}
-              position="right"
-              teamName={initialSetup.teams[1].name}
-              teamColor={initialSetup.teams[1].color}
-            ></TeamInfoCol>
-          </section>
-          <section id="StateTimer" className="tracking-wide text-6xl my-6">
-            <StateInfo isMobile={isMobile} time={gameTime}></StateInfo>
-          </section>
-          <section id="GameActions" className="grid grid-cols-3 auto-rows-fr gap-x-6 gap-y-4 grid-rows-3 text-4xl">
-            {getGameActionButtons(allActions.penaltyActions, 8, () => {})}
-          </section>
-          <section id="team_panel" className="h-full  rounded-[2rem] mt-6 drop-shadow-xl shadow-lg">
-            <div id="team_names" className="text-6xl flex justify-between px-4 py-8 text-action-blue items-center">
-              <div
-                onClick={() => {
-                  setActiveTeam(0);
-                }}
-                className="w-full text-center"
-              >
-                {initialSetup.teams[0].name}
-              </div>
-              <div
-                onClick={() => {
-                  setActiveTeam(1);
-                }}
-                className=" w-full text-center"
-              >
-                {initialSetup.teams[1].name}
-              </div>
-            </div>
-            <div id="team_details" className="relative pt-4 text-[#323232] mx-1 ">
-              {activeTeam == 0 ? (
-                <TeamColumn
-                  actions={allActions.teamActions}
-                  isMobile={true}
-                  // numRobots={6}
-                  agentState={gameState.agents}
-                  isKicking={gameState.kicking_teamId == 0}
-                  teamName={initialSetup.teams[0].name}
-                  teamId={0}
-                  teamColor={initialSetup.teams[0].color}
-                ></TeamColumn>
-              ) : (
-                <TeamColumn
-                  actions={allActions.teamActions}
-                  isMobile={true}
-                  // numRobots={6}
-                  teamName={initialSetup.teams[1].name}
-                  agentState={gameState.agents}
-                  isKicking={gameState.kicking_teamId == 1}
-                  teamId={1}
-                  teamColor={initialSetup.teams[1].color}
-                ></TeamColumn>
-              )}
-            </div>
-          </section>
-          <section id="undo_queue" className="h-full mt-12 w-full bg">
-            <UndoQueue isMobile={true} undoQueue={initialSetup.actionList}></UndoQueue>
-          </section>
-        </div>
+        <MainMobileLayout
+          teams={initialSetup?.teams}
+          actions={allActions}
+          undoQueue={initialSetup?.actionList}
+          activeTeam={activeTeam}
+          gameState={gameState}
+        ></MainMobileLayout>
       );
     } else {
       return (
-        <div className="grid h-full grid-cols-5 p-4 unselectable justify-between" key={"none"}>
-          <section id="team_col_left" className="col-span-2">
-            <TeamColumn
-              position="left"
-              // numRobots={6}
-              isKicking={gameState.kicking_teamId == 0 ? true : false}
-              actions={allActions.teamActions}
-              teamId={0}
-              teamName={initialSetup.teams[0].name}
-              teamColor={initialSetup.teams[0].color}
-              agentState={gameState.agents}
-            ></TeamColumn>
-          </section>
-          <section id="center-control-panel" className="col-span-1 h-full ">
-            <div className="h-full items-center  justify-center gap-6 grid grid-rows-6  grid-cols-1 max-w-full">
-              <Score teams={initialSetup.teams}></Score>
-              <Timer time={gameTime}></Timer>
-              <CenterControlPanel penaltyActions={allActions.penaltyActions} stateTimer={gameTime}></CenterControlPanel>
-            </div>
-          </section>
-          <section id="team_col_right" className="col-span-2">
-            <TeamColumn
-              position="right"
-              // numRobots={6}
-              isKicking={gameState.kicking_teamId == 1 ? true : false}
-              actions={allActions.teamActions}
-              teamId={1}
-              teamName={initialSetup.teams[1].name}
-              teamColor={initialSetup.teams[1].color}
-              agentState={gameState.agents}
-            ></TeamColumn>
-          </section>
-        </div>
+        <MainLayout
+          teams={initialSetup?.teams}
+          actions={allActions}
+          activeTeam={activeTeam}
+          gameState={gameState}
+        ></MainLayout>
       );
     }
   }

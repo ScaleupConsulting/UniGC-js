@@ -12,13 +12,7 @@ export const useActionQueue = () => {
   // });
   return [undoQueue, addToQ];
 };
-// export const GameContext = .createContext({});
-// interface GameState {
-//   kicking_teamId: number;
-//   agents: {
-//     penalized: boolean;
-//   }[];
-// }
+
 
 export const useGameState = () => {
   let initialState = {

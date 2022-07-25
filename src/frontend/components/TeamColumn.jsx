@@ -3,7 +3,7 @@ import { sendAction } from "../actionHandlers";
 import { useActionQueue } from "../hooks/customHooks";
 import { actionInUse, allAgents, isActionClickable, isAgentClickable } from "../hooks/useSharedState";
 import { ActionButton } from "./ActionButton";
-import { ActiveAgentRow } from "./ActiveAgentRow";
+import { KickingPenaltyRow, PenaltyQueue } from "./PenaltyQueue";
 import { RobotRow } from "./RobotRow";
 
 function TeamColumn(props) {
@@ -66,19 +66,19 @@ function TeamColumn(props) {
   }
 
   function actionOnClick(actionKey, teamId) {
-    setAgents(
-      agents.map((a) => {
-        a.teamId == teamId ? (a.selectable = true) : (a.selectable = false);
-        return a;
-      })
-    );
+    // setAgents(
+    //   agents.map((a) => {
+    //     a.teamId == teamId ? (a.selectable = true) : (a.selectable = false);
+    //     return a;
+    //   })
+    // );
     if (selectedAction == actionKey) {
-      setAgents(
-        agents.map((a) => {
-          a.selectable = true;
-          return a;
-        })
-      );
+      // setAgents(
+      //   agents.map((a) => {
+      //     a.selectable = true;
+      //     return a;
+      //   })
+      // );
       setSelectedAction(null);
     } else {
       setSelectedAction(actionKey);
@@ -102,10 +102,16 @@ function TeamColumn(props) {
     return actions;
   }
 
+  const teamColor = props.team?.color;
+  const otherTeamColor = props.otherTeamColor;
+
   if (props.isMobile) {
     return (
       <>
-        <div className={`${props.teamId == 0 ? "left-0 " : " left-1/2"} z-10 w-1/2 absolute top-0 h-1 bg-action-blue `}></div>
+        <div
+          style={{ backgroundColor: otherTeamColor }}
+          className={`${props.teamId == 0 ? "left-0 " : " left-1/2"} z-10 w-1/2 absolute top-0 h-1  `}
+        ></div>
         <div className={`w-full absolute top-0 h-1 bg-white z-0`}></div>
         <div className="p-6">
           <div className="grid grid-cols-3 mb-6 gap-y-4 gap-x-6 auto-rows-fr grid-rows-1 text-4xl">
@@ -113,7 +119,12 @@ function TeamColumn(props) {
             <ActionButton isMobile={true} color={"bg-pink-100 font-bold"} actionName="Global Game Stuck"></ActionButton>
             <div className="grid grid-rows-2 gap-2 font-semibold text-[#323232] text-4xl justify-end tracking-wider ">
               <div className="justify-self-end">
-                <ActiveAgentRow teamId={props.teamId} isMobile={true} isKicking={props.isKicking} teamColor={props.teamColor} />
+                <KickingPenaltyRow
+                  teamId={props.teamId}
+                  isMobile={true}
+                  isKicking={props.isKicking}
+                  teamColor={otherTeamColor}
+                />
               </div>
               <div className="w-full">Penalties: 0</div>
             </div>
@@ -153,13 +164,20 @@ function TeamColumn(props) {
             )}
           </div>
         </div>
-        <ActiveAgentRow teamId={props.teamId} isRight={isRight} teamColor={props.teamColor} isKicking={props.isKicking}></ActiveAgentRow>
+        <KickingPenaltyRow
+          teamId={props.teamId}
+          isRight={isRight}
+          teamColor={teamColor}
+          isKicking={props.isKicking}
+        ></KickingPenaltyRow>
         <div className="grid grid-cols-3 gap-2 row-span-1 tracking-wider font-extrabold">
           <button
             onClick={() => {
               console.log(`${props.teamId} Timeout`);
             }}
-            className={`col-span-1 relative w-full h-12 rounded-md p-1 ${isRight ? " bg-action-blue" : " bg-action-red"}`}
+            className={`col-span-1 relative w-full h-12 rounded-md p-1 ${
+              isRight ? " bg-action-blue" : " bg-action-red"
+            }`}
           >
             <div className="absolute w-6 h-6 top-0 left-0 translate-x-[-50%] translate-y-[-50%] text-black ring-4 ring-green-300 bg-white rounded-full">
               1
@@ -187,7 +205,9 @@ function TeamColumn(props) {
         <div className={`grid h-full  grid-flow-row w-3/4 row-span-3 ${isRight && "place-self-end"} items-center `}>
           {getRobots(isRight ? "bg-action-blue" : "bg-action-red")}
         </div>
-        <div className="grid grid-cols-3 gap-2 text-center row-span-1">{getActions(isRight ? "bg-action-blue" : "bg-action-red")}</div>
+        <div className="grid grid-cols-3 gap-2 text-center row-span-1">
+          {getActions(isRight ? "bg-action-blue" : "bg-action-red")}
+        </div>
       </div>
     );
 }

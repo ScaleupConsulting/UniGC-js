@@ -13,20 +13,21 @@ wss.on("connection", function connection(ws, req) {
   send({
     type: "setup",
     data: {
-      game: {
-        teams: [
-          {
-            name: "MiPal",
-            color: "#fb6963",
-          },
-          {
-            name: "TjArk",
-            color: "#0354ce",
-          },
-        ],
-        actionList: [...actionList.map((a) => a.ui_name)],
-      },
+      teams: [
+        {
+          name: "MiPal",
+          color: "#fb6963",
+          score: 0
+        },
+        {
+          name: "TjArk",
+          color: "#0354ce",
+          score: 0
+        },
+      ],
+      actionList: [...actionList.map((a) => a.ui_name)],
     },
+
   });
   ws.on("close", function close() {
     console.log("[SERVER]: Client disconnected.");

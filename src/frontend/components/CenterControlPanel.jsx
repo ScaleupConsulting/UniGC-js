@@ -4,8 +4,7 @@ import { ActionButton } from "./ActionButton";
 import { StateInfo } from "./Timer";
 import { UndoQueue } from "./UndoQueue";
 
-function CenterControlPanel({ penaltyActions, stateTimer }) {
-  // const [undoQueue, setUndoQueue] = useActionQueue();
+function CenterControlPanel({ penaltyActions, stateTimer, undoQueue }) {
   const [selectedAction, setSelectedAction] = actionInUse.useSharedState();
   const [agents, setAgents] = allAgents.useSharedState();
 
@@ -29,7 +28,7 @@ function CenterControlPanel({ penaltyActions, stateTimer }) {
           <ActionButton
             disabled={selectedAction && selectedAction != a.id}
             isMobile={isMobile}
-            visible={!(i >= maxButtons)}
+            visible={i < maxButtons}
             actionName={a.actionName}
             color={"bg-action-blue"}
             onClick={() => {
@@ -62,7 +61,7 @@ function CenterControlPanel({ penaltyActions, stateTimer }) {
         {getGameActionButtons(3, () => {})}
       </div>
       <div className="row-span-1 z-40 self-end w-[175%] h-fit justify-self-center ">
-        <UndoQueue></UndoQueue>
+        <UndoQueue undoQueue={undoQueue}></UndoQueue>
       </div>
     </div>
   );

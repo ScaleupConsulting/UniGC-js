@@ -1,3 +1,4 @@
+const path = require('path')
 module.exports = [
   // Add support for native node modules
   // {
@@ -17,15 +18,17 @@ module.exports = [
     },
   },
   {
-    test: /\.jsx?$/,
+    test: /\.jsx$/,
     use: {
       loader: "babel-loader",
       options: {
+        include: [path.resolve("src/frontend")],
         exclude: /node_modules/,
-        presets: ["@babel/preset-react",],
+        presets: ["@babel/preset-react"],
       },
     },
   },
+
   {
     test: /\.(jpg|png|svg)$/,
     loader: "url-loader",

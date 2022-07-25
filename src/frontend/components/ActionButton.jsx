@@ -12,7 +12,6 @@ export function getGameActionButtons(actions, maxButtons, onClick, isMobile = fa
           visible={true}
           actionName={"More Buttons"}
           color={"bg-gray-500"}
-          // onClick={onclick} //show list
           key={"center_morebuttons"}
         ></ActionButton>
       );
@@ -21,12 +20,10 @@ export function getGameActionButtons(actions, maxButtons, onClick, isMobile = fa
         <ActionButton
           disabled={false}
           isMobile={isMobile}
-          // teamId={-1}
-          // agentId={-1}
           visible={!(i >= maxButtons)}
           actionName={a.actionName}
           color={"bg-action-blue"}
-          onClick={onclick}
+          onClick={() => onclick()}
           key={"center_" + a.actionName}
         ></ActionButton>
       );
@@ -44,10 +41,11 @@ export const ActionButton = ({ disabled, teamId, agentId, actionName, color, onC
       onClick={() => {
         // sendAction(actionName, teamId, agentId);
         onClick();
-        if (actionName == "Goal Kick") ws.send(JSON.stringify({ type: "action", actionName: "goal_kick", team: teamId }));
+        if (actionName == "Goal Kick")
+          ws.send(JSON.stringify({ type: "action", actionName: "goal_kick", team: teamId }));
       }}
       className={`col-span-1 z-40 ${disabled ? "disabled" : ""} ${
-        isMobile ? " p-4 rounded-xl tracking-wide" : "text-xs md:text-sm lg:text-md p-2 rounded-md "
+        isMobile ? " p-4 rounded-xl tracking-wide" : "text-xs md:text-xs lg:text-sm p-1 rounded-md "
       } ${visible ? "" : "hidden"} ${color}  capitalize`}
     >
       {actionName}
