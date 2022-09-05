@@ -1,6 +1,6 @@
 import WebSocket from "ws";
 import actionList from "./actionDefs";
-const wsPort = 3002;
+const wsPort = 3003;
 
 const wss = new WebSocket.Server({ port: wsPort });
 console.log(`WS on port: ${wsPort}`);

@@ -3,6 +3,7 @@ import { sendAction } from "../actionHandlers";
 import { useActionQueue } from "../hooks/customHooks";
 import { actionInUse, allAgents, isActionClickable, isAgentClickable } from "../hooks/useSharedState";
 import { ActionButton } from "./ActionButton";
+import { ActionsRadialButton } from "./ActionsRadialButton";
 import { KickingPenaltyRow, PenaltyQueue } from "./PenaltyQueue";
 import { RobotRow } from "./RobotRow";
 
@@ -205,8 +206,16 @@ function TeamColumn(props) {
         <div className={`grid h-full  grid-flow-row w-3/4 row-span-3 ${isRight && "place-self-end"} items-center `}>
           {getRobots(isRight ? "bg-action-blue" : "bg-action-red")}
         </div>
-        <div className="grid grid-cols-3 gap-2 text-center row-span-1">
-          {getActions(isRight ? "bg-action-blue" : "bg-action-red")}
+        <div className="grid grid-cols-4 justify-center items-center row-span-1">
+          <ActionsRadialButton
+            actions={props.actions}
+            selectedAction={selectedAction}
+            setSelectedAction={setSelectedAction}
+            teamId={props.teamId}
+            isRight={isRight}
+          ></ActionsRadialButton>
+
+          {/* {getActions(isRight ? "bg-action-blue" : "bg-action-red")} */}
         </div>
       </div>
     );

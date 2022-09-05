@@ -24,6 +24,7 @@ export class SharedStateTarget extends EventTarget {
     return [state, setSharedState];
   }
 }
+//mock
 const tempAllAgents = [
   { agentId: "0_1", name: "M1", teamId: 0, selectable: true, substitute: false },
   { agentId: "0_2", name: "M2", teamId: 0, selectable: true, substitute: false },

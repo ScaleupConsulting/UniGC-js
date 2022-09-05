@@ -1,4 +1,3 @@
-// const timerr = require("../build/Release/nodeExperiments.node");
 const controller = require("../build/Release/GameController.node");
 
 controller.startTimer()

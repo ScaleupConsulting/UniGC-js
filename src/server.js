@@ -1,6 +1,5 @@
 import * as express from "express";
 import path from "path";
-import wss from "./websocket"
 
 const app = express();
 
